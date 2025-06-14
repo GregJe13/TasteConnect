@@ -10,6 +10,15 @@
             })
         </script>
     @endif
+    @if (session()->has('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: '{{ session('success') }}',
+            })
+        </script>
+    @endif
     <section class="w-screen h-screen flex items-center justify-center bg-gray-100">
         <div class="w-full max-w-md bg-white p-8 shadow-lg rounded-md">
             <h2 class="text-2xl font-bold text-center mb-6">Login</h2>
