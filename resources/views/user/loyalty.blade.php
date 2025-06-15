@@ -26,22 +26,35 @@
             </div>
             <h2 class="font-bold text-xl text-[var(--primary)] ml-1">Available Offers</h2>
             <div class="grid grid-cols-2 gap-x-8 gap-y-6">
+                {{-- AWAL MODIFIKASI --}}
                 @foreach ($loyalties as $loyalty)
-                    <div class="shadow-xl rounded-xl w-full px-4 py-3 h-fit">
-                        <p class="font-medium"><i class="fa-solid fa-ticket mr-2"></i>{{ $loyalty->name }}
+                    @php
+                        $isExpired = \Carbon\Carbon::parse($loyalty->endDate)->isPast();
+                    @endphp
 
+                    <div
+                        class="shadow-xl rounded-xl w-full px-4 py-3 h-fit {{ $isExpired ? 'bg-gray-200 opacity-70' : '' }}">
+                        <p class="font-medium"><i class="fa-solid fa-ticket mr-2"></i>{{ $loyalty->name }}</p>
                         <p class="font-medium"><i class="fa-solid fa-coins"></i> {{ $loyalty->point }} Points</p>
                         <p class="font-medium"><i class="fa-solid fa-medal"></i> {{ $loyalty->reward }}</p>
-                        <p class="font-semibold text-orange-600">Valid Until
-                            {{ \Carbon\Carbon::parse($loyalty->endDate)->format('d M Y') }}
+                        <p class="font-semibold {{ $isExpired ? 'text-red-600' : 'text-orange-600' }}">
+                            Valid Until {{ \Carbon\Carbon::parse($loyalty->endDate)->format('d M Y') }}
                         </p>
-                        <button onclick="redeem('{{ $loyalty->id }}')"
-                            class="w-fit mt-2 px-4 text-sm bg-[var(--primary)] text-white py-2 rounded hover:bg-blue-700 transition">
-                            Redeem Reward
-                        </button>
+
+                        @if ($isExpired)
+                            <button disabled
+                                class="w-fit mt-2 px-4 text-sm bg-gray-500 text-white py-2 rounded cursor-not-allowed">
+                                Expired
+                            </button>
+                        @else
+                            <button onclick="redeem('{{ $loyalty->id }}')"
+                                class="w-fit mt-2 px-4 text-sm bg-[var(--primary)] text-white py-2 rounded hover:bg-blue-700 transition">
+                                Redeem Reward
+                            </button>
+                        @endif
                     </div>
                 @endforeach
-
+                {{-- AKHIR MODIFIKASI --}}
             </div>
     </section>
 

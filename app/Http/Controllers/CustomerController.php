@@ -11,6 +11,7 @@ use App\Models\Menu;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Request as FacadesRequest;
 
@@ -40,24 +41,33 @@ class CustomerController extends Controller
 
     public function regist(Request $request)
     {
-        $customer = Customer::where('email', $request->email)->first();
+        // --- LOGIKA VALIDASI BARU ---
+        $validator = Validator::make($request->all(), [
+            'username' => 'required|string|max:255',
+            'address' => 'required|string',
+            'number' => 'required|string',
+            'email' => 'required|string|email|max:255|unique:customers',
+            'password' => 'required|string|min:6|confirmed', // 'confirmed' akan otomatis mencocokkan dengan 'password_confirmation'
+        ]);
 
-        if ($customer) {
-            return redirect()->route('register')->with('error', 'Email has been taken!');
-        } else {
-            $cust = new Customer;
-            $cust->name = $request->username;
-            $cust->email = $request->email;
-            $cust->address = $request->address;
-            $cust->phoneNum = $request->number;
-            $cust->password = Hash::make($request->password);
-
-            $cust->save();
-            return redirect()->route('login')->with('success', 'Successfully regist your account!');
+        if ($validator->fails()) {
+            return redirect()->route('register')
+                ->withErrors($validator)
+                ->withInput();
         }
-    }
+        // --- AKHIR LOGIKA VALIDASI ---
 
-    // app/Http/Controllers/CustomerController.php
+        // Kode di bawah ini hanya akan berjalan jika validasi berhasil
+        $cust = new Customer;
+        $cust->name = $request->username;
+        $cust->email = $request->email;
+        $cust->address = $request->address;
+        $cust->phoneNum = $request->number;
+        $cust->password = Hash::make($request->password);
+
+        $cust->save();
+        return redirect()->route('login')->with('success', 'Successfully regist your account!');
+    }
 
     public function auth(Request $request)
     {

@@ -1,5 +1,5 @@
     <!-- Main navigation container -->
-    <nav class="fixed z-[100] flex w-full flex-nowrap items-center justify-between bg-zinc-100 xl:px-44 lg:px-24 md:px-12 px-4 py-2 text-black shadow-dark-mild hover:text-neutral-700 focus:text-neutral-700 lg:flex-wrap lg:justify-start lg:py-4"
+    <nav class="fixed z-[100] flex w-full flex-nowrap items-center justify-between bg-zinc-100 xl:px-50 lg:px-24 md:px-12 px-4 py-2 text-black shadow-dark-mild hover:text-neutral-700 focus:text-neutral-700 lg:flex-wrap lg:justify-start lg:py-4"
         data-twe-navbar-ref>
         <div class="flex w-full flex-wrap items-center justify-between">
             <div class="ms-2">
