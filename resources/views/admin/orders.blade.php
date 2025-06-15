@@ -65,10 +65,10 @@
                     class="w-full px-4 text-sm mt-1 bg-green-700 text-white py-2 rounded font-semibold transition shadow-xl">
                     Export Data as Excel
                 </button>
-                <button type="button" data-twe-ripple-init data-twe-ripple-color="light"
-                    class="w-full px-4 text-sm mt-1 bg-red-700 text-white py-2 rounded font-semibold transition shadow-xl">
-                    Export Data as PDF
-                </button>
+                
+                    <a href="{{ route('orders.export.pdf') }}"><button type="button" data-twe-ripple-init data-twe-ripple-color="light"
+                    class="w-full px-4 text-sm mt-1 bg-red-700 text-white py-2 rounded font-semibold transition shadow-xl">Export Data as PDF</button></a>
+                
             </div>
             <div class="grid grid-cols-2 gap-x-8 gap-y-6" id="order-container">
                 @foreach ($orders as $order)

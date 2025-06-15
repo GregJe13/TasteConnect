@@ -104,3 +104,4 @@ Route::prefix('admin')->name('admin.')->middleware(AdminMiddleware::class)->grou
         Route::delete('/delete/{promotion:id}', [PromotionController::class, 'deletePromotion'])->name('delete');
     });
 });
+Route::get('/admin/orders/export/pdf', [OrderController::class, 'exportPDF'])->name('orders.export.pdf');
