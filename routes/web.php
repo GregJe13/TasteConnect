@@ -83,6 +83,15 @@ Route::prefix('admin')->name('admin.')->middleware(AdminMiddleware::class)->grou
 
     Route::get('/inventory', [InventoryController::class, 'checkStock'])->name('inventory');
 
+    Route::prefix('menu')->name('menu.')->group(function () {
+        Route::get('/', [MenuController::class, 'index'])->name('index');
+        Route::get('/create', [MenuController::class, 'create'])->name('create');
+        Route::post('/store', [MenuController::class, 'store'])->name('store');
+        Route::get('/{menu}/edit', [MenuController::class, 'edit'])->name('edit');
+        Route::put('/{menu}/update', [MenuController::class, 'update'])->name('update');
+        Route::delete('/{menu}/destroy', [MenuController::class, 'destroy'])->name('destroy');
+    });
+
     Route::prefix('inventory')->name('inventory.')->group(function () {
         Route::put('/update/{inventory:id}', [InventoryController::class, 'updateStock'])->name('update');
         Route::post('/store', [InventoryController::class, 'store'])->name('store');

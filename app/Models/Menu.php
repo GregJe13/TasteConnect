@@ -9,11 +9,13 @@ class Menu extends Model
 {
     use HasUuids;
 
+    // MODIFIKASI ARRAY DI BAWAH INI
     protected $fillable = [
         'name',
         'price',
         'description',
-        'image'
+        'image',
+        'stock' // Tambahkan 'stock' di sini
     ];
 
     public function carts()

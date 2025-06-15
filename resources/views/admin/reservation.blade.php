@@ -15,21 +15,21 @@
             <h2 class="text-2xl font-bold text-center mb-6">Customer Reservations</h2>
 
             {{-- Penjelasan Warna (Legend) --}}
-            <div class="mb-4 border-b pb-4">
-                <div class="flex items-center gap-x-4 pl-1">
+            <div class="mb-4 flex gap-x-10 justify-center">
+                <div class="flex items-center gap-x-2">
                     <div class="rounded-full w-[15px] h-[15px] bg-green-500"></div>
                     <i class="fa-solid fa-arrow-right"></i>
-                    <p>Approved (Disetujui)</p>
+                    <p>Approved</p>
                 </div>
-                <div class="flex items-center gap-x-4 pl-1">
+                <div class="flex items-center gap-x-2">
                     <div class="rounded-full w-[15px] h-[15px] bg-amber-500"></div>
                     <i class="fa-solid fa-arrow-right"></i>
-                    <p>Pending (Menunggu Konfirmasi)</p>
+                    <p>Pending</p>
                 </div>
-                <div class="flex items-center gap-x-4 pl-1">
+                <div class="flex items-center gap-x-2">
                     <div class="rounded-full w-[15px] h-[15px] bg-red-500"></div>
                     <i class="fa-solid fa-arrow-right"></i>
-                    <p>Rejected (Ditolak)</p>
+                    <p>Rejected</p>
                 </div>
             </div>
 
@@ -58,15 +58,13 @@
                 </div>
 
                 {{-- Filter Status --}}
-                <div class="flex-shrink-0 w-full md:w-auto">
-                    <select id="reservation-filter"
-                        class="block w-full h-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
-                        <option value="all">Semua Status</option>
-                        <option value="pending">Pending</option>
-                        <option value="approved">Approved</option>
-                        <option value="rejected">Rejected</option>
-                    </select>
-                </div>
+                <select id="reservation-filter"
+                    class="w-3/10 h-[40px] py-1 px-2 rounded border border-[var(--primary)] focus:outline-none text-[var(--primary)] font-semibold">
+                    <option value="all">Semua Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="rejected">Rejected</option>
+                </select>
             </div>
 
             {{-- Kontainer untuk Kartu Reservasi --}}

@@ -3,7 +3,7 @@
         data-twe-navbar-ref>
         <div class="flex w-full flex-wrap items-center justify-between">
             <div class="ms-2">
-                <a class="text-xl text-black font-extrabold" href="{{ route('index') }}">Taste<span
+                <a class="text-xl text-black font-extrabold" href="{{ route('admin.index') }}">Taste<span
                         class="text-[var(--contrast)]">Connect</span><span class="text-orange-600">Admin</span></a>
             </div>
             <!-- Hamburger button for mobile view -->
@@ -27,6 +27,10 @@
                 <!-- Left links -->
                 <ul class="list-style-none me-auto flex flex-col ps-0 lg:mt-1 lg:flex-row" data-twe-navbar-nav-ref>
                     <li class="my-2 ps-2 flex items-center lg:my-0 lg:pe-1 lg:ps-2" data-twe-nav-item-ref>
+                        <a class="text-black lg:px-2" aria-current="page" href="{{ route('admin.menu.index') }}"
+                            data-twe-nav-link-ref>Menus</a>
+                    </li>
+                    <li class="my-2 ps-2 flex items-center lg:my-0 lg:pe-1 lg:ps-2" data-twe-nav-item-ref>
                         <a class="text-black lg:px-2" aria-current="page" href="{{ route('admin.orders') }}"
                             data-twe-nav-link-ref>Orders</a>
                     </li>
@@ -38,14 +42,10 @@
                         <a class="text-black lg:px-2" aria-current="page" href="{{ route('admin.loyalty.index') }}"
                             data-twe-nav-link-ref>Loyalty</a>
                     </li>
-                    <li class="my-2 ps-2 flex items-center lg:my-0 lg:pe-1 lg:ps-2" data-twe-nav-item-ref>
+                    {{-- <li class="my-2 ps-2 flex items-center lg:my-0 lg:pe-1 lg:ps-2" data-twe-nav-item-ref>
                         <a class="text-black lg:px-2" aria-current="page" href="{{ route('admin.inventory') }}"
                             data-twe-nav-link-ref>Inventory</a>
-                    </li>
-                    <li class="my-2 ps-2 flex items-center lg:my-0 lg:pe-1 lg:ps-2" data-twe-nav-item-ref>
-                        <a class="text-black lg:px-2" aria-current="page" href="{{ route('admin.profile.index') }}"
-                            data-twe-nav-link-ref>Profiles</a>
-                    </li>
+                    </li> --}}
                     <li class="my-2 ps-2 flex items-center lg:my-0 lg:pe-1 lg:ps-2" data-twe-nav-item-ref>
                         <a class="text-black lg:px-2" aria-current="page" href="{{ route('admin.notification.index') }}"
                             data-twe-nav-link-ref>Send Notif</a>
@@ -53,6 +53,10 @@
                     <li class="my-2 ps-2 flex items-center lg:my-0 lg:pe-1 lg:ps-2" data-twe-nav-item-ref>
                         <a class="text-black lg:px-2" aria-current="page" href="{{ route('admin.promotion.index') }}"
                             data-twe-nav-link-ref>Promotions</a>
+                    </li>
+                    <li class="my-2 ps-2 flex items-center lg:my-0 lg:pe-1 lg:ps-2" data-twe-nav-item-ref>
+                        <a class="text-black lg:px-2" aria-current="page" href="{{ route('admin.profile.index') }}"
+                            data-twe-nav-link-ref>Profiles</a>
                     </li>
                     @if (session()->has('id'))
                         <li class="my-2 ps-2 flex items-center lg:my-0 lg:pe-1 lg:ps-2" data-twe-nav-item-ref>

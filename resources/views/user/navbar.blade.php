@@ -27,6 +27,10 @@
                 <!-- Left links -->
                 <ul class="list-style-none me-auto flex flex-col ps-0 lg:mt-1 lg:flex-row" data-twe-navbar-nav-ref>
                     <li class="my-2 ps-2 flex items-center lg:my-0 lg:pe-1 lg:ps-2" data-twe-nav-item-ref>
+                        <a class="text-black lg:px-2" aria-current="page" href="{{ route('index') }}"
+                            data-twe-nav-link-ref>Menu</a>
+                    </li>
+                    <li class="my-2 ps-2 flex items-center lg:my-0 lg:pe-1 lg:ps-2" data-twe-nav-item-ref>
                         <a class="text-black lg:px-2" aria-current="page" href="{{ route('orders') }}"
                             data-twe-nav-link-ref>Orders</a>
                     </li>

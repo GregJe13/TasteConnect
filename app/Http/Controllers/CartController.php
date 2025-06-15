@@ -21,7 +21,7 @@ class CartController extends Controller
 
         $valid = Validator::make($data, [
             'menu_id' => 'required',
-            'quantity' => 'required',
+            'quantity' => 'required|integer|min:1',
         ], [
             'menu_id.required' => 'Your cart is empty!',
             'quantity.required' => 'Menu quantity is required!',
@@ -31,16 +31,30 @@ class CartController extends Controller
             return response()->json(['message' => $valid->errors()->first(), 'success' => false]);
         }
 
-        $menuPrice = Menu::where('id', $request->menu_id)->first()->price;
+        $menu = Menu::find($request->menu_id);
 
-        $price = $menuPrice * $request->quantity;
+        if (!$menu) {
+            return response()->json(['message' => 'Menu not found!', 'success' => false]);
+        }
+
+        // --- AWAL LOGIKA VALIDASI STOK ---
+        $cart = Cart::where('menu_id', $request->menu_id)->where('customer_id', session('id'))->first();
+        $quantityInCart = $cart ? $cart->quantity : 0;
+
+        if (($quantityInCart + $request->quantity) > $menu->stock) {
+            return response()->json(['message' => 'Not enough stock available!', 'success' => false]);
+        }
+        // --- AKHIR LOGIKA VALIDASI STOK ---
+
+
+        $price = $menu->price * $request->quantity;
 
         $data['price'] = $price;
         $data['customer_id'] = session('id');
 
-        $cart = Cart::where('menu_id', $data['menu_id'])->where('customer_id', $data['customer_id'])->first();
         $currentQty = $cart->quantity ?? 0;
         $currentPrice = $cart->price ?? 0;
+
         Cart::updateOrCreate(
             [
                 'menu_id' => $data['menu_id'],

@@ -31,31 +31,46 @@
             </div>
             <div class="grid grid-cols-3 gap-8 pb-12">
                 @foreach ($menus as $menu)
-                    <div class="shadow-xl rounded-xl w-full px-8 py-6 h-fit">
-                        <img src="{{ asset('assets/' . $menu->image) }}" alt="menu"
-                            class="w-full h-48 object-cover rounded">
+                    {{-- Kita tambahkan class 'relative' di sini agar bisa menempatkan teks di atas gambar --}}
+                    <div class="relative shadow-xl rounded-xl w-full px-8 py-6 h-fit @if ($menu->stock == 0) opacity-50 bg-gray-100 @endif"
+                        data-stock="{{ $menu->stock }}">
+
+                        {{-- TAMBAHKAN KELAS 'grayscale' JIKA STOK 0 --}}
+                        <img src="{{ asset('assets/' . $menu->image) }}" alt="{{ $menu->name }}"
+                            class="w-full h-48 object-cover rounded @if ($menu->stock == 0) grayscale @endif">
+
+                        {{-- TAMBAHKAN BLOK INI UNTUK MENAMPILKAN TEKS "HABIS" --}}
+                        @if ($menu->stock == 0)
+                            <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 rounded-t-lg top-0 mx-8 mt-6"
+                                style="height: 192px;">
+                                <span class="text-white text-2xl font-bold border-2 border-white px-4 py-2">Sold Out</span>
+                            </div>
+                        @endif
+
                         <div class="flex justify-between items-center mt-2">
                             <p class="font-semibold">{{ $menu->name }}</p>
                             <p class="font-semibold">Rp{{ number_format($menu->price) }}</p>
                         </div>
+                        <p class="text-sm text-gray-600 font-medium">Stock: {{ $menu->stock }}</p>
                         <div class="flex justify-between items-center mt-2">
                             <div class="flex gap-x-4">
                                 <button
                                     class="rounded-full bg-[var(--primary)] text-white text-lg w-[30px] h-[30px] flex justify-center items-center minus-btn"
-                                    data-id="{{ $menu->id }}" data-twe-ripple-init
-                                    data-twe-ripple-color="light">-</button>
+                                    data-id="{{ $menu->id }}" data-twe-ripple-init data-twe-ripple-color="light"
+                                    @if ($menu->stock == 0) disabled @endif>-</button>
                                 <input type="number" id="quantity-{{ $menu->id }}" disabled
                                     class="bg-none outline-none border-none w-[20px] text-center" value="0"
-                                    min="1" max="30">
+                                    min="1" max="{{ $menu->stock }}">
                                 <button
                                     class="rounded-full bg-[var(--primary)] text-white text-lg w-[30px] h-[30px] flex justify-center items-center plus-btn"
-                                    data-id="{{ $menu->id }}" data-twe-ripple-init
-                                    data-twe-ripple-color="light">+</button>
+                                    data-id="{{ $menu->id }}" data-twe-ripple-init data-twe-ripple-color="light"
+                                    @if ($menu->stock == 0) disabled @endif>+</button>
                             </div>
 
                             <button class="w-fit px-4 py-2 bg-[var(--contrast)] rounded-md text-sm text-white"
                                 onclick="addToCart('{{ $menu->id }}')" data-twe-ripple-init
-                                data-twe-ripple-color="light">Add to Cart</button>
+                                data-twe-ripple-color="light" @if ($menu->stock == 0) disabled @endif>Add to
+                                Cart</button>
                         </div>
                     </div>
                 @endforeach
@@ -165,9 +180,12 @@
                 button.addEventListener('click', function() {
                     const id = this.getAttribute('data-id');
                     const input = document.getElementById(`quantity-${id}`);
+                    // Ambil stock dari data attribute
+                    const stock = parseInt(this.closest('[data-stock]').getAttribute('data-stock'));
                     let value = parseInt(input.value) || 0;
 
-                    if (value < 20) {
+                    // Ubah kondisi batas atas dari 20 menjadi stock
+                    if (value < stock) {
                         input.value = value + 1;
                     }
                 });
