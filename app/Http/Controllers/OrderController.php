@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class OrderController extends Controller
 {
@@ -28,5 +29,12 @@ class OrderController extends Controller
         $order->update(['status' => $request->status]);
 
         return response()->json(['message' => 'Order status updated!', 'success' => true]);
+    }
+
+    public function exportPDF()
+    {
+        $orders = Order::all();
+        $pdf = Pdf::loadView('admin.orders_pdf', compact('orders'));
+        return $pdf->download('orders.pdf');
     }
 }
