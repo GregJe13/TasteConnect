@@ -93,6 +93,9 @@ Route::prefix('admin')->name('admin.')->middleware(AdminMiddleware::class)->grou
     Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
     Route::patch('/orders/status/{order:id}', [OrderController::class, 'updateStatus'])->name('order.update.status');
 
+    Route::get('/orders/export/excel', [OrderController::class, 'exportExcel'])->name('orders.export.excel');
+    Route::get('/orders/export/pdf', [OrderController::class, 'exportPdf'])->name('orders.export.pdf');
+
     Route::get('/notification', [NotificationController::class, 'index'])->name('notification.index');
     Route::post('/notification/store', [NotificationController::class, 'sendNotification'])->name('notification.store');
 
@@ -104,4 +107,3 @@ Route::prefix('admin')->name('admin.')->middleware(AdminMiddleware::class)->grou
         Route::delete('/delete/{promotion:id}', [PromotionController::class, 'deletePromotion'])->name('delete');
     });
 });
-Route::get('/admin/orders/export/pdf', [OrderController::class, 'exportPDF'])->name('orders.export.pdf');
