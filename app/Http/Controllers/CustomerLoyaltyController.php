@@ -7,6 +7,7 @@ use App\Models\CustomerLoyalty;
 use App\Models\LoyaltyProgram;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 class CustomerLoyaltyController extends Controller
 {
@@ -20,9 +21,23 @@ class CustomerLoyaltyController extends Controller
             return response()->json(['message' => $valid->errors()->first(), 'success' => false], 400);
         }
 
-        $decrement = LoyaltyProgram::find($request->loyalty_program_id)->point;
+        // --- AWAL MODIFIKASI ---
+        $loyaltyProgram = LoyaltyProgram::find($request->loyalty_program_id);
+
+        // Periksa apakah program loyalitas ada
+        if (!$loyaltyProgram) {
+            return response()->json(['message' => 'Loyalty program not found!', 'success' => false], 404);
+        }
+
+        // Periksa apakah program sudah kedaluwarsa
+        if (Carbon::parse($loyaltyProgram->endDate)->isPast()) {
+            return response()->json(['message' => 'This loyalty program has expired!', 'success' => false], 400);
+        }
+        // --- AKHIR MODIFIKASI ---
+
+        $decrement = $loyaltyProgram->point;
         $customer = Customer::find(session('id'));
-        
+
         if ($customer->loyaltyPoint - $decrement < 0) {
             return response()->json(['message' => 'Insufficient loyalty points!', 'success' => false], 400);
         }
