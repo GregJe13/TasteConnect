@@ -60,15 +60,17 @@
                     <option value="month">1 Month Ago</option>
                 </select>
             </div>
-            <div class="flex gap-x-8 mb-8">
-                <button type="button" data-twe-ripple-init data-twe-ripple-color="light"
-                    class="w-full px-4 text-sm mt-1 bg-green-700 text-white py-2 rounded font-semibold transition shadow-xl">
-                    Export Data as Excel
-                </button>
-                
-                    <a href="{{ route('orders.export.pdf') }}"><button type="button" data-twe-ripple-init data-twe-ripple-color="light"
-                    class="w-full px-4 text-sm mt-1 bg-red-700 text-white py-2 rounded font-semibold transition shadow-xl">Export Data as PDF</button></a>
-                
+            <div class="flex gap-x-4 mb-8">
+                <a href="{{ route('admin.orders.export.excel') }}"
+                    class="flex-1 flex items-center justify-center gap-x-2 w-full px-4 py-2 text-sm bg-green-700 text-white rounded-md font-semibold transition shadow-md hover:bg-green-800">
+                    <i class="fa-solid fa-file-excel"></i>
+                    <span>Export to Excel</span>
+                </a>
+                <a href="{{ route('admin.orders.export.pdf') }}" target="_blank"
+                    class="flex-1 flex items-center justify-center gap-x-2 w-full px-4 py-2 text-sm bg-red-700 text-white rounded-md font-semibold transition shadow-md hover:bg-red-800">
+                    <i class="fa-solid fa-file-pdf"></i>
+                    <span>Export to PDF</span>
+                </a>
             </div>
             <div class="grid grid-cols-2 gap-x-8 gap-y-6" id="order-container">
                 @foreach ($orders as $order)
