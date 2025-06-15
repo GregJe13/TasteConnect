@@ -1,10 +1,4 @@
 @extends('admin.layout')
-
-<style>
-    body {
-        overflow: hidden;
-    }
-</style>
 @section('content')
     @if (session()->has('error'))
         <script>

@@ -243,43 +243,67 @@
         function addToCart(id) {
             const quantity = document.getElementById(`quantity-${id}`).value;
             if (quantity <= 0) {
+                // Jangan lakukan apa-apa jika jumlahnya 0
                 return;
             }
-            Swal.fire({
-                title: 'Saving...',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
 
-            fetch(`{{ route('cart.store') }}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    },
-                    body: JSON.stringify({
-                        menu_id: id,
-                        quantity: quantity
-                    })
-                }).then(response => response.json())
-                .then(data => {
-                    Swal.close();
-                    if (data.success) {
-                        popToast(data.success, data.message);
-                        getCart();
-                    } else {
-                        popToast(data.success, data.message);
+            // Gunakan Blade directive untuk memeriksa apakah sesi 'id' ada
+            @if (session()->has('id'))
+                // JIKA SUDAH LOGIN: Lakukan panggilan fetch seperti biasa
+                Swal.fire({
+                    title: 'Saving...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
                     }
-                })
-                .catch(error => {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Something went wrong!',
-                    });
                 });
+
+                fetch(`{{ route('cart.store') }}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        },
+                        body: JSON.stringify({
+                            menu_id: id,
+                            quantity: quantity
+                        })
+                    }).then(response => response.json())
+                    .then(data => {
+                        Swal.close();
+                        if (data.success) {
+                            popToast(data.success, data.message);
+                            getCart();
+                            document.getElementById(`quantity-${id}`).value = 0; // Reset counter
+                        } else {
+                            popToast(data.success, data.message);
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Something went wrong!',
+                        });
+                    });
+            @else
+                // JIKA BELUM LOGIN: Arahkan ke halaman login dengan query parameter
+                const loginUrl = new URL('{{ route('login') }}');
+                loginUrl.searchParams.append('menu_id', id);
+                loginUrl.searchParams.append('quantity', quantity);
+
+                // Simpan pesan untuk ditampilkan setelah login
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Silakan Login',
+                    text: 'Anda harus login terlebih dahulu untuk menambahkan item ke keranjang.',
+                    confirmButtonText: 'Login Sekarang'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = loginUrl.toString();
+                    }
+                });
+            @endif
         }
 
 
