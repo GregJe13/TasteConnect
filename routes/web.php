@@ -33,6 +33,7 @@ Route::middleware(AuthMiddleware::class)->group(function () {
 
     Route::get('/reservation', [ReservationController::class, 'index'])->name('reservation');
     Route::post('/reservation/store', [ReservationController::class, 'makeReservation'])->name('reservation.store');
+    Route::delete('/reservation/cancel/{reservation}', [ReservationController::class, 'cancelReservation'])->name('reservation.cancel');
 
     Route::get('/payment', [PaymentController::class, 'index'])->name('payment');
     Route::post('/payment/store', [PaymentController::class, 'makePayment'])->name('payment.store');
@@ -45,9 +46,11 @@ Route::middleware(AuthMiddleware::class)->group(function () {
 
     Route::get('/orders', [CustomerController::class, 'orders'])->name('orders');
     Route::get('/orders/{id}', [CustomerController::class, 'showOrders'])->name('orders.show');
+    Route::patch('/orders/cancel/{order}', [CustomerController::class, 'cancelOrder'])->name('orders.cancel');
     Route::post('/feedback/store', [FeedbackController::class, 'addFeedback'])->name('feedback.store');
 
     Route::get('/notification', [NotificationController::class, 'get'])->name('notification.get');
+    Route::delete('/notification/delete/{notification}', [NotificationController::class, 'destroy'])->name('notification.destroy');
 
     Route::get('/loyalty', [CustomerController::class, 'loyalty'])->name('loyalty');
     Route::post('/customer_loyalty/store', [CustomerLoyaltyController::class, 'redeemLoyaltyPoint'])->name('customer_loyalty.store');

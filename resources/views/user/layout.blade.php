@@ -13,7 +13,7 @@
 
     {{-- CDN for JQUERY --}}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
-    
+
     {{-- FontAwesome --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
 
@@ -82,11 +82,19 @@
         </div>
     </div>
     <div class="fixed px-12 pt-24 top-0 right-0">
-        <button
-            class="rounded-full w-[55px] h-[55px] bg-[var(--primary)] flex justify-center items-center hover:cursor-pointer"
-            data-twe-target="#notifModal" data-twe-toggle="modal">
-            <i class="fa-solid fa-envelope text-white text-2xl"></i>
-        </button>
+        {{-- Tambahkan div dengan class "relative" untuk positioning --}}
+        <div class="relative">
+            <button
+                class="rounded-full w-[55px] h-[55px] bg-[var(--primary)] flex justify-center items-center hover:cursor-pointer"
+                data-twe-target="#notifModal" data-twe-toggle="modal">
+                <i class="fa-solid fa-envelope text-white text-2xl"></i>
+            </button>
+            {{-- Ini adalah elemen badge notifikasi, awalnya disembunyikan --}}
+            <span id="notif-badge"
+                class="absolute top-[-2px] right-[-2px] flex h-[22px] min-w-[22px] items-center justify-center rounded-full border-2 border-white bg-red-600 px-1.5 text-xs font-bold text-white hidden">
+                {{-- Jumlah notifikasi akan diisi oleh JavaScript --}}
+            </span>
+        </div>
     </div>
 
     <!-- Mailbox Modal -->
@@ -189,20 +197,38 @@
                 .then(response => response.json())
                 .then(response => {
                     if (response.success) {
-                        console.log('Fetch notification success');
-                        console.log(response.data);
+                        const notifications = response.data;
+                        const notifCount = notifications.length;
+
                         const notifContainer = document.getElementById('notif-container');
+                        const badge = document.getElementById('notif-badge'); // Ambil elemen badge
+
+                        // --- LOGIKA BARU UNTUK BADGE DIMULAI DI SINI ---
+                        if (notifCount > 0) {
+                            badge.textContent = notifCount; // Isi angka notifikasi
+                            badge.classList.remove('hidden'); // Tampilkan badge
+                        } else {
+                            badge.classList.add('hidden'); // Sembunyikan jika tidak ada notif
+                        }
+                        // --- LOGIKA BARU SELESAI ---
+
                         notifContainer.innerHTML = '';
-
-                        response.data.forEach(notif => {
-
+                        notifications.forEach(notif => {
                             const notifDiv = document.createElement('div');
-                            notifDiv.classList.add('shadow-lg', 'rounded', 'w-full', 'p-4', 'mb-4', 'border-2',
+                            // Tambahkan class 'relative' untuk positioning tombol 'X'
+                            notifDiv.classList.add('relative', 'shadow-lg', 'rounded', 'w-full', 'p-4', 'mb-4',
+                                'border-2',
                                 'border-[var(--primary)]');
-                            notifDiv.innerHTML = `
-                                                <h3 class="text-lg font-bold text-[var(--primary)]">${notif.title}</h3>
-                                         `;
 
+                            // Beri id unik pada div notifikasi agar bisa dihapus dari DOM jika diperlukan
+                            notifDiv.id = `notif-${notif.id}`;
+
+                            notifDiv.innerHTML = `
+                                <h3 class="text-lg font-bold text-[var(--primary)] pr-6">${notif.title}</h3>
+                                <button onclick="deleteNotif('${notif.id}')" class="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 hover:text-red-600 transition-colors">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            `;
                             notifContainer.appendChild(notifDiv);
                         });
                     } else {
@@ -215,6 +241,31 @@
         }
 
         getNotif();
+
+        function deleteNotif(id) {
+            // Kirim request DELETE ke server
+            fetch(`/notification/delete/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Jika berhasil, panggil getNotif() lagi untuk refresh daftar dan badge
+                        getNotif();
+                        popToast(true, 'Notifikasi dihapus.');
+                    } else {
+                        popToast(false, data.message || 'Gagal menghapus notifikasi.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deleting notification:', error);
+                    popToast(false, 'Terjadi kesalahan.');
+                });
+        }
     </script>
 
 </body>

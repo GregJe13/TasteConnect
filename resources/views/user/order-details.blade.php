@@ -12,6 +12,22 @@
     @endif
     <section class="w-screen min-h-screen flex items-center justify-center bg-gray-100 py-24">
         <div class="w-full max-w-2xl bg-white p-8 shadow-lg rounded-md">
+            {{-- TOMBOL BARU DITAMBAHKAN DI SINI --}}
+            <div class="flex justify-between items-center mb-4">
+                <button type="button" onclick="window.history.back()"
+                    class="w-fit px-4 text-sm bg-gray-500 text-white py-2 rounded font-semibold transition hover:bg-gray-600">
+                    <i class="fa-solid fa-arrow-left mr-2"></i>Kembali
+                </button>
+                {{-- Tombol Batal Pesanan hanya muncul jika status 0 (Processing) --}}
+                @if ($order->status == 0)
+                    <button type="button" onclick="cancelOrder('{{ $order->id }}')"
+                        class="w-fit px-4 text-sm bg-red-600 text-white py-2 rounded font-semibold transition hover:bg-red-700">
+                        Batalkan Pesanan
+                    </button>
+                @endif
+            </div>
+            {{-- AKHIR BAGIAN TOMBOL BARU --}}
+
             <h2 class="text-2xl font-bold text-center mb-6">Order Details</h2>
             <div class="flex justify-between w-full">
                 <p class="text-lg font-bold">
@@ -71,6 +87,46 @@
 
 
     <script>
+        function cancelOrder(orderId) {
+            Swal.fire({
+                title: 'Anda yakin?',
+                text: "Pesanan ini akan dibatalkan dan tidak dapat dikembalikan.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, batalkan!',
+                cancelButtonText: 'Tidak'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/orders/cancel/${orderId}`, {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                            }
+                        }).then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire(
+                                    'Dibatalkan!',
+                                    'Pesanan Anda telah berhasil dibatalkan.',
+                                    'success'
+                                ).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire(
+                                    'Gagal!',
+                                    data.message || 'Terjadi kesalahan saat membatalkan pesanan.',
+                                    'error'
+                                );
+                            }
+                        });
+                }
+            })
+        }
+
         const stars = document.querySelectorAll('#star-container i');
 
         stars.forEach((star, index) => {

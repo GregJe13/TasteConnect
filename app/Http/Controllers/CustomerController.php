@@ -42,9 +42,9 @@ class CustomerController extends Controller
     {
         $customer = Customer::where('email', $request->email)->first();
 
-        if($customer){
+        if ($customer) {
             return redirect()->route('register')->with('error', 'Email has been taken!');
-        }else{
+        } else {
             $cust = new Customer;
             $cust->name = $request->username;
             $cust->email = $request->email;
@@ -55,8 +55,9 @@ class CustomerController extends Controller
             $cust->save();
             return redirect()->route('login')->with('success', 'Successfully regist your account!');
         }
-        
     }
+
+    // app/Http/Controllers/CustomerController.php
 
     public function auth(Request $request)
     {
@@ -67,6 +68,43 @@ class CustomerController extends Controller
             session()->put('email', $customer->email);
             session()->put('name', $customer->name);
 
+            // --- LOGIKA BARU DIMULAI DI SINI ---
+            // Cek apakah ada parameter menu_id dan quantity dari redirect
+            if ($request->has('menu_id') && $request->has('quantity')) {
+                $menuId = $request->input('menu_id');
+                $quantity = $request->input('quantity');
+                $menu = Menu::find($menuId);
+
+                if ($menu && $quantity > 0) {
+                    $price = $menu->price * $quantity;
+
+                    // Cari apakah item sudah ada di keranjang
+                    $cartItem = Cart::where('customer_id', $customer->id)
+                        ->where('menu_id', $menuId)
+                        ->first();
+
+                    $currentQty = $cartItem->quantity ?? 0;
+                    $currentPrice = $cartItem->price ?? 0;
+
+                    // Gunakan updateOrCreate untuk menambah atau membuat baru
+                    Cart::updateOrCreate(
+                        [
+                            'menu_id' => $menuId,
+                            'customer_id' => $customer->id,
+                        ],
+                        [
+                            'quantity' => $currentQty + $quantity,
+                            'price' => $currentPrice + $price,
+                        ]
+                    );
+
+                    // Arahkan ke halaman utama dengan pesan sukses ganda
+                    return redirect()->route('index')->with('success', 'Login berhasil & item telah ditambahkan ke keranjang!');
+                }
+            }
+            // --- LOGIKA BARU SELESAI ---
+
+            // Jika tidak ada redirect dari cart, jalankan alur normal
             return redirect()->route('index')->with('success', 'Successfully logged in!');
         } else {
             return redirect()->route('login')->with('error', 'Invalid credentials, please check your email or password!');
@@ -117,5 +155,24 @@ class CustomerController extends Controller
         $props['order'] = Order::where('id', $id)->with('customer')->first();
         $props['details'] = OrderDetail::where('order_id', $id)->with(['order', 'menu'])->get();
         return view('user.order-details', $props);
+    }
+
+    public function cancelOrder(Order $order)
+    {
+        // Pastikan pesanan ini milik pengguna yang sedang login
+        if ($order->customer_id !== session('id')) {
+            return response()->json(['success' => false, 'message' => 'Anda tidak berwenang melakukan aksi ini.'], 403);
+        }
+
+        // Hanya pesanan dengan status 'Processing' (0) yang bisa dibatalkan
+        if ($order->status !== 0) {
+            return response()->json(['success' => false, 'message' => 'Pesanan ini tidak dapat dibatalkan lagi.'], 422);
+        }
+
+        // Ubah status menjadi 'Cancelled' (3)
+        $order->status = 3;
+        $order->save();
+
+        return response()->json(['success' => true, 'message' => 'Pesanan berhasil dibatalkan.']);
     }
 }

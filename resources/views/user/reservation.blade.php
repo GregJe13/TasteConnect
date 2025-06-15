@@ -43,13 +43,22 @@
                             @else
                                 <div class="shadow-md rounded-xl shadow-red-500 w-full px-4 py-3 h-fit">
                     @endif
-
                     <p class="font-medium"><i
                             class="fa-solid fa-calendar mr-2"></i>{{ \Carbon\Carbon::parse($reservation->date)->format('Y-m-d') }}
                     </p>
                     <p class="font-medium"><i
                             class="fa-solid fa-clock mr-2"></i>{{ \Carbon\Carbon::parse($reservation->date)->format('H:i') }}
                     </p>
+
+                    {{-- TOMBOL BARU DITAMBAHKAN DI SINI --}}
+                    {{-- Hanya muncul jika status 0 (Pending) --}}
+                    @if ($reservation->status == 0)
+                        <button type="button" onclick="cancelReservation('{{ $reservation->id }}')"
+                            class="w-fit mt-2 px-4 text-xs bg-red-600 text-white py-2 rounded transition hover:bg-red-700">
+                            Batalkan
+                        </button>
+                    @endif
+                    {{-- AKHIR TOMBOL BARU --}}
             </div>
             @endforeach
 
@@ -111,6 +120,46 @@
 
 
     <script>
+        function cancelReservation(reservationId) {
+            Swal.fire({
+                title: 'Anda yakin?',
+                text: "Reservasi ini akan dibatalkan.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, batalkan!',
+                cancelButtonText: 'Tidak'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/reservation/cancel/${reservationId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                            }
+                        }).then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire(
+                                    'Dibatalkan!',
+                                    'Reservasi Anda telah berhasil dibatalkan.',
+                                    'success'
+                                ).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire(
+                                    'Gagal!',
+                                    data.message || 'Terjadi kesalahan saat membatalkan reservasi.',
+                                    'error'
+                                );
+                            }
+                        });
+                }
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             $('#submit').on('click', function(e) {
                 e.preventDefault();

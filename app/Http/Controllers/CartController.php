@@ -19,9 +19,6 @@ class CartController extends Controller
     {
         $data = $request->all();
 
-        if (session()->has('id') == false) {
-            return response()->json(['message' => 'You session have expired, please log in!', 'success' => false]);
-        }
         $valid = Validator::make($data, [
             'menu_id' => 'required',
             'quantity' => 'required',
