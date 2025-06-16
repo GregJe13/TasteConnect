@@ -21,19 +21,15 @@ class CustomerLoyaltyController extends Controller
             return response()->json(['message' => $valid->errors()->first(), 'success' => false], 400);
         }
 
-        // --- AWAL MODIFIKASI ---
         $loyaltyProgram = LoyaltyProgram::find($request->loyalty_program_id);
 
-        // Periksa apakah program loyalitas ada
         if (!$loyaltyProgram) {
             return response()->json(['message' => 'Loyalty program not found!', 'success' => false], 404);
         }
 
-        // Periksa apakah program sudah kedaluwarsa
         if (Carbon::parse($loyaltyProgram->endDate)->isPast()) {
             return response()->json(['message' => 'This loyalty program has expired!', 'success' => false], 400);
         }
-        // --- AKHIR MODIFIKASI ---
 
         $decrement = $loyaltyProgram->point;
         $customer = Customer::find(session('id'));

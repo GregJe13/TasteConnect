@@ -9,19 +9,13 @@ use Illuminate\Support\Facades\File;
 
 class MenuController extends Controller
 {
-    /**
-     * Menampilkan daftar semua menu.
-     */
     public function index()
     {
         $props['title'] = 'Manage Menus';
-        $props['menus'] = Menu::all();
+        $props['menus'] = Menu::latest()->get();
         return view('admin.menu.index', $props);
     }
 
-    /**
-     * Menampilkan formulir untuk membuat menu baru.
-     */
     public function create()
     {
         $props['title'] = 'Add New Menu';
@@ -30,11 +24,10 @@ class MenuController extends Controller
 
     public function store(Request $request)
     {
-        // 1. Validasi input
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:menus,name',
             'price' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0', // Tambahkan validasi untuk stock
+            'stock' => 'required|integer|min:0',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
@@ -44,19 +37,16 @@ class MenuController extends Controller
                 ->withInput();
         }
 
-        // 2. Proses upload gambar (tidak berubah)
         $imageName = time() . '.' . $request->image->extension();
         $request->image->move(public_path('assets'), $imageName);
 
-        // 3. Simpan data ke database
         Menu::create([
             'name' => $request->name,
             'price' => $request->price,
             'image' => $imageName,
-            'stock' => $request->stock, // Tambahkan 'stock' di sini
+            'stock' => $request->stock,
         ]);
 
-        // 4. Redirect ke halaman daftar menu dengan pesan sukses
         return redirect()->route('admin.menu.index')->with('success', 'Menu successfully added!');
     }
 
@@ -69,12 +59,11 @@ class MenuController extends Controller
 
     public function update(Request $request, Menu $menu)
     {
-        // 1. Validasi
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:menus,name,' . $menu->id,
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Image tidak wajib diisi saat edit
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -85,39 +74,37 @@ class MenuController extends Controller
 
         $menuData = $request->only(['name', 'price', 'stock']);
 
-        // 2. Cek jika ada gambar baru yang di-upload
         if ($request->hasFile('image')) {
-            // Hapus gambar lama
             $oldImagePath = public_path('assets/' . $menu->image);
             if (File::exists($oldImagePath)) {
                 File::delete($oldImagePath);
             }
 
-            // Upload gambar baru
             $imageName = time() . '.' . $request->image->extension();
             $request->image->move(public_path('assets'), $imageName);
             $menuData['image'] = $imageName;
         }
 
-        // 3. Update data di database
         $menu->update($menuData);
 
-        // 4. Redirect dengan pesan sukses
         return redirect()->route('admin.menu.index')->with('success', 'Menu successfully updated!');
     }
 
     public function destroy(Menu $menu)
     {
-        // 1. Hapus file gambar yang ada
-        $imagePath = public_path('assets/' . $menu->image);
-        if (File::exists($imagePath)) {
-            File::delete($imagePath);
+        if ($menu->orderDetails()->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Menu ini tidak dapat dihapus karena sudah menjadi bagian dari riwayat pesanan. Anda bisa mengedit stoknya menjadi 0 jika tidak ingin menampilkannya lagi.'
+            ], 409);
         }
 
-        // 2. Hapus data dari database
+        if ($menu->image && File::exists(public_path('assets/' . $menu->image))) {
+            File::delete(public_path('assets/' . $menu->image));
+        }
+
         $menu->delete();
 
-        // 3. Kembalikan response JSON
-        return response()->json(['success' => true, 'message' => 'Menu deleted successfully.']);
+        return response()->json(['success' => true, 'message' => 'Menu berhasil dihapus!']);
     }
 }

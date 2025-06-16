@@ -157,9 +157,53 @@
             statusFilter.addEventListener('change', applyFilters);
         });
 
-        // Fungsi updateStatus yang sudah ada
         function updateStatus(id, status) {
-            // ... (kode fungsi updateStatus tidak berubah)
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You are about to update the reservation status",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, update it!',
+                cancelButtonText: 'No, cancel',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`{{ route('admin.reservation.update', '') }}/${id}`, {
+                            method: 'PATCH',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                status: status
+                            }),
+                        })
+                        .then(response => response.json())
+                        .then(response => {
+                            if (response.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success',
+                                    text: 'Reservation status has been updated',
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Oops...',
+                                    text: response.message || 'Something went wrong!',
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: error.message || 'Network error!',
+                            });
+                        });
+                }
+            });
         }
     </script>
 @endsection

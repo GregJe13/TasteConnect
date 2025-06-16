@@ -15,14 +15,12 @@
                 </div>
             @endif
 
-            {{-- Arahkan action ke route 'update' dan gunakan method PUT --}}
             <form action="{{ route('admin.menu.update', $menu->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
-                @method('PUT') {{-- Penting untuk update --}}
+                @method('PUT')
 
                 <div class="mb-4">
                     <label for="name" class="block text-gray-700 font-medium mb-2">Menu Name</label>
-                    {{-- Isi value dengan data yang ada --}}
                     <input type="text" id="name" name="name"
                         class="w-full border border-gray-300 p-3 rounded focus:outline-none focus:ring focus:ring-blue-300"
                         required value="{{ old('name', $menu->name) }}">

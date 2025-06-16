@@ -37,14 +37,12 @@ class CartController extends Controller
             return response()->json(['message' => 'Menu not found!', 'success' => false]);
         }
 
-        // --- AWAL LOGIKA VALIDASI STOK ---
         $cart = Cart::where('menu_id', $request->menu_id)->where('customer_id', session('id'))->first();
         $quantityInCart = $cart ? $cart->quantity : 0;
 
         if (($quantityInCart + $request->quantity) > $menu->stock) {
             return response()->json(['message' => 'Not enough stock available!', 'success' => false]);
         }
-        // --- AKHIR LOGIKA VALIDASI STOK ---
 
 
         $price = $menu->price * $request->quantity;

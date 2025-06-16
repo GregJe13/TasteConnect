@@ -19,7 +19,7 @@
             </a>
             <div class="grid grid-cols-3 overflow-y-auto max-h-[400px] gap-x-8 gap-y-6 p-4">
                 @forelse ($menus as $menu)
-                    <div class="shadow-xl rounded-xl w-full px-4 py-3 h-fit">
+                    <div class="shadow-xl rounded-xl w-full px-4 py-3 h-fit" id="menu-card-{{ $menu->id }}">
                         <img src="{{ asset('assets/' . $menu->image) }}" alt="{{ $menu->name }}"
                             class="w-full h-40 object-cover rounded mb-2">
                         <p class="text-black font-bold">{{ $menu->name }}</p>
@@ -31,8 +31,7 @@
                                 class="flex-1 text-center inline-block bg-amber-500 text-white px-4 py-2 rounded text-sm hover:bg-amber-600 transition">
                                 Edit
                             </a>
-                            <button type="button"
-                                onclick="deleteMenu('{{ route('admin.menu.destroy', $menu->id) }}', '{{ $menu->name }}')"
+                            <button type="button" onclick="deleteMenu('{{ $menu->id }}')"
                                 class="flex-1 text-center inline-block bg-red-600 text-white px-4 py-2 rounded text-sm hover:bg-red-700 transition">
                                 Delete
                             </button>
@@ -46,50 +45,65 @@
     </section>
 
     <script>
-        function deleteMenu(deleteUrl, name) {
+        function deleteMenu(id) {
             Swal.fire({
-                title: 'Are you sure?',
-                text: `You are about to delete "${name}". You won't be able to revert this!`,
+                title: "Anda yakin?",
+                text: "Item menu ini akan dihapus secara permanen.",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, delete it!'
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Gunakan URL yang sudah jadi dari parameter
-                    fetch(deleteUrl, {
+                    // Tentukan URL dan CSRF token
+                    const url = `{{ url('admin/menu/destroy') }}/${id}`;
+                    const csrfToken = '{{ csrf_token() }}';
+
+                    // Kirim request DELETE menggunakan fetch
+                    fetch(url, {
                             method: 'DELETE',
                             headers: {
+                                'X-CSRF-TOKEN': csrfToken,
                                 'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                                'Accept': 'application/json'
                             }
                         })
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
+                                // Hapus elemen kartu menu dari halaman
+                                const menuCard = document.getElementById(`menu-card-${id}`);
+                                if (menuCard) {
+                                    menuCard.remove();
+                                }
+
+                                // Tampilkan pesan sukses
                                 Swal.fire(
-                                    'Deleted!',
-                                    'The menu has been deleted.',
+                                    'Berhasil Dihapus!',
+                                    data.message,
                                     'success'
-                                ).then(() => {
-                                    location.reload();
-                                });
+                                );
                             } else {
+                                // Tampilkan pesan error jika gagal
                                 Swal.fire(
-                                    'Failed!',
-                                    data.message ||
-                                    'An error occurred while deleting the menu.', // Menampilkan pesan error dari server
+                                    'Gagal!',
+                                    data.message || 'Terjadi kesalahan.',
                                     'error'
                                 );
                             }
                         })
                         .catch(error => {
-                            // Menangani error jaringan atau parsing JSON
-                            Swal.fire('Error!', 'Could not connect to the server.', 'error');
+                            console.error('Error:', error);
+                            Swal.fire(
+                                'Error!',
+                                'Terjadi kesalahan saat menghubungi server.',
+                                'error'
+                            );
                         });
                 }
-            })
+            });
         }
     </script>
 @endsection

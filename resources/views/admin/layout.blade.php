@@ -94,7 +94,6 @@
             const toastText = toast.querySelector('.toast-text');
             const toastContainer = toast.querySelector('div');
 
-            // Tentukan warna berdasarkan parameter success
             if (success) {
                 toastTitle.classList.remove('text-red-700');
                 toastTitle.classList.add('text-green-700');
@@ -111,11 +110,9 @@
                 toastContainer.classList.add('bg-red-100', 'border-red-500');
             }
 
-            // Set isi toast
             toastTitle.textContent = success ? 'Success' : 'Error';
             toastText.textContent = message;
 
-            // Tampilkan toast
             toast.style = 'right: 0';
             setTimeout(() => {
                 toast.style = 'right: -100vw';

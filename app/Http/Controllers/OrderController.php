@@ -48,13 +48,10 @@ class OrderController extends Controller
         $columns = ['Order ID', 'Customer Name', 'Customer Email', 'Order Date', 'Total Amount', 'Status', 'Address'];
 
         $callback = function () use ($orders, $columns) {
-            // Membuka output stream untuk menulis file
             $file = fopen('php://output', 'w');
 
-            // Menambahkan UTF-8 BOM agar karakter non-Inggris tampil benar di Excel
             fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
 
-            // Menulis baris header dengan pemisah titik koma
             fputcsv($file, $columns, ';');
 
             $statusMap = [
@@ -65,21 +62,19 @@ class OrderController extends Controller
                 4 => 'Feedback'
             ];
 
-            // Menulis setiap baris data pesanan
             foreach ($orders as $order) {
                 $row = [
                     $order->id,
                     $order->customer->name,
                     $order->customer->email,
                     $order->orderDate,
-                    // Format angka agar sesuai dengan standar lokal tanpa simbol mata uang
+
                     number_format($order->totalAmount, 2, ',', ''),
                     $statusMap[$order->status] ?? 'Unknown',
-                    // Menghapus newline dari alamat agar tidak merusak baris CSV
+
                     str_replace(["\r", "\n"], ' ', $order->address)
                 ];
 
-                // Menulis baris data dengan pemisah titik koma
                 fputcsv($file, $row, ';');
             }
 

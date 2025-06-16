@@ -46,12 +46,10 @@ class NotificationController extends Controller
 
     public function destroy(Notification $notification)
     {
-        // Pengecekan keamanan: pastikan notifikasi ini milik pengguna yang sedang login
         if ($notification->customer_id !== session('id')) {
             return response()->json(['success' => false, 'message' => 'Akses ditolak.'], 403);
         }
 
-        // Hapus notifikasi
         $notification->delete();
 
         return response()->json(['success' => true, 'message' => 'Notifikasi berhasil dihapus.']);

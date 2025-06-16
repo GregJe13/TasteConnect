@@ -41,7 +41,6 @@ class CustomerController extends Controller
 
     public function regist(Request $request)
     {
-        // --- LOGIKA VALIDASI BARU ---
         $validator = Validator::make($request->all(), [
             'username' => 'required|string|max:255',
             'address' => 'required|string',
@@ -55,9 +54,7 @@ class CustomerController extends Controller
                 ->withErrors($validator)
                 ->withInput();
         }
-        // --- AKHIR LOGIKA VALIDASI ---
 
-        // Kode di bawah ini hanya akan berjalan jika validasi berhasil
         $cust = new Customer;
         $cust->name = $request->username;
         $cust->email = $request->email;
@@ -78,8 +75,6 @@ class CustomerController extends Controller
             session()->put('email', $customer->email);
             session()->put('name', $customer->name);
 
-            // --- LOGIKA BARU DIMULAI DI SINI ---
-            // Cek apakah ada parameter menu_id dan quantity dari redirect
             if ($request->has('menu_id') && $request->has('quantity')) {
                 $menuId = $request->input('menu_id');
                 $quantity = $request->input('quantity');
@@ -88,7 +83,6 @@ class CustomerController extends Controller
                 if ($menu && $quantity > 0) {
                     $price = $menu->price * $quantity;
 
-                    // Cari apakah item sudah ada di keranjang
                     $cartItem = Cart::where('customer_id', $customer->id)
                         ->where('menu_id', $menuId)
                         ->first();
@@ -96,7 +90,6 @@ class CustomerController extends Controller
                     $currentQty = $cartItem->quantity ?? 0;
                     $currentPrice = $cartItem->price ?? 0;
 
-                    // Gunakan updateOrCreate untuk menambah atau membuat baru
                     Cart::updateOrCreate(
                         [
                             'menu_id' => $menuId,
@@ -108,13 +101,9 @@ class CustomerController extends Controller
                         ]
                     );
 
-                    // Arahkan ke halaman utama dengan pesan sukses ganda
                     return redirect()->route('index')->with('success', 'Login berhasil & item telah ditambahkan ke keranjang!');
                 }
             }
-            // --- LOGIKA BARU SELESAI ---
-
-            // Jika tidak ada redirect dari cart, jalankan alur normal
             return redirect()->route('index')->with('success', 'Successfully logged in!');
         } else {
             return redirect()->route('login')->with('error', 'Invalid credentials, please check your email or password!');
@@ -169,17 +158,14 @@ class CustomerController extends Controller
 
     public function cancelOrder(Order $order)
     {
-        // Pastikan pesanan ini milik pengguna yang sedang login
         if ($order->customer_id !== session('id')) {
             return response()->json(['success' => false, 'message' => 'Anda tidak berwenang melakukan aksi ini.'], 403);
         }
 
-        // Hanya pesanan dengan status 'Processing' (0) yang bisa dibatalkan
         if ($order->status !== 0) {
             return response()->json(['success' => false, 'message' => 'Pesanan ini tidak dapat dibatalkan lagi.'], 422);
         }
 
-        // Ubah status menjadi 'Cancelled' (3)
         $order->status = 3;
         $order->save();
 

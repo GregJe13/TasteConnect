@@ -89,7 +89,7 @@ Route::prefix('admin')->name('admin.')->middleware(AdminMiddleware::class)->grou
         Route::post('/store', [MenuController::class, 'store'])->name('store');
         Route::get('/{menu}/edit', [MenuController::class, 'edit'])->name('edit');
         Route::put('/{menu}/update', [MenuController::class, 'update'])->name('update');
-        Route::delete('/{menu}/destroy', [MenuController::class, 'destroy'])->name('destroy');
+        Route::delete('/destroy/{menu}', [MenuController::class, 'destroy'])->name('menu.destroy');
     });
 
     Route::prefix('inventory')->name('inventory.')->group(function () {

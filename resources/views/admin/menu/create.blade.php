@@ -5,7 +5,6 @@
         <div class="w-full max-w-lg bg-white p-8 shadow-lg rounded-md">
             <h2 class="text-3xl font-bold text-center mb-6">Add New Menu</h2>
 
-            {{-- Menampilkan error validasi --}}
             @if ($errors->any())
                 <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
                     <ul>
