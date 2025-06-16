@@ -13,7 +13,8 @@ class Menu extends Model
         'name',
         'price',
         'description',
-        'image'
+        'image',
+        'stock'
     ];
 
     public function carts()

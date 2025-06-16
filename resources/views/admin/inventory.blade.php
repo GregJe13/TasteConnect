@@ -44,7 +44,6 @@
         </div>
     </section>
 
-    <!-- Create Modal -->
     <div data-twe-modal-init
         class="fixed left-0 top-0 z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
         id="createModal" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-modal="true" role="dialog">
@@ -53,11 +52,9 @@
             <div
                 class="pointer-events-auto relative flex w-full flex-col rounded-md border-none bg-white bg-clip-padding text-current shadow-4 outline-none">
                 <div class="flex flex-shrink-0 items-center justify-between rounded-t-md border-b-2 border-neutral-100 p-4">
-                    <!-- Modal title -->
                     <h5 class="text-xl font-bold leading-normal text-surface" id="exampleModalCenterTitle">
                         Make a Reservation
                     </h5>
-                    <!-- Close button -->
                     <button type="button"
                         class="box-content rounded-none border-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
                         data-twe-modal-dismiss aria-label="Close">
@@ -70,7 +67,6 @@
                     </button>
                 </div>
 
-                <!-- Modal body -->
                 <div class="grid grid-cols-2 gap-4 p-4">
                     <div class="w-full">
                         <p>Name</p>
@@ -82,7 +78,6 @@
                     </div>
                 </div>
 
-                <!-- Modal footer -->
                 <div
                     class="flex flex-shrink-0 flex-wrap items-center justify-end rounded-b-md border-t-2 border-neutral-100 p-4">
                     <button type="button"
@@ -100,7 +95,6 @@
         </div>
     </div>
 
-    <!-- Edit Modal -->
     <div data-twe-modal-init
         class="fixed left-0 top-0 z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
         id="editModal" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-modal="true" role="dialog">
@@ -109,11 +103,9 @@
             <div
                 class="pointer-events-auto relative flex w-full flex-col rounded-md border-none bg-white bg-clip-padding text-current shadow-4 outline-none dark:bg-surface-dark">
                 <div class="flex flex-shrink-0 items-center justify-between rounded-t-md border-b-2 border-neutral-100 p-4">
-                    <!-- Modal title -->
                     <h5 class="text-xl font-medium leading-normal text-surface" id="exampleModalCenterTitle">
                         Edit Item Data
                     </h5>
-                    <!-- Close button -->
                     <button type="button"
                         class="box-content rounded-none border-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none dark:text-neutral-400 dark:hover:text-neutral-300 dark:focus:text-neutral-300"
                         data-twe-modal-dismiss aria-label="Close">
@@ -126,7 +118,6 @@
                     </button>
                 </div>
 
-                <!-- Modal body -->
                 <div class="grid grid-cols-2 gap-4 p-4">
                     <input type="hidden" id="edit-id">
                     <div class="w-full">
@@ -139,7 +130,6 @@
                     </div>
                 </div>
 
-                <!-- Modal footer -->
                 <div
                     class="flex flex-shrink-0 flex-wrap items-center justify-end rounded-b-md border-t-2 border-neutral-100 p-4">
                     <button type="button"

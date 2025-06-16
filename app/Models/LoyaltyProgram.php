@@ -16,4 +16,9 @@ class LoyaltyProgram extends Model
         'startDate',
         'endDate',
     ];
+
+    public function customerLoyalties()
+    {
+        return $this->hasMany(CustomerLoyalty::class);
+    }
 }

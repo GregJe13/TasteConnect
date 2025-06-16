@@ -23,46 +23,52 @@ class LoyaltyProgramController extends Controller
 
     public function store(Request $request)
     {
-        $valid = Validator::make($request->all(), [
-            'name' => 'required',
-            'point' => 'required',
-            'reward' => 'required',
+        $validator = Validator::make($request->all(), [
+            'name'      => 'required|string|max:255|unique:loyalty_programs,name',
+            'point'     => 'required|integer|min:1',
+            'reward'    => 'required|string|max:255',
             'startDate' => 'required|date',
-            'endDate' => 'required|date',
+            'endDate'   => 'required|date|after_or_equal:startDate',
         ]);
-        if ($valid->fails()) {
-            return response()->json(['message' => $valid->errors()->first(), 'success' => false]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()]);
         }
 
-        LoyaltyProgram::create($valid->validated());
-        return response()->json(['message' => 'Data successfully added!', 'success' => true]);
+        LoyaltyProgram::create($validator->validated());
+        return response()->json(['message' => 'Data berhasil ditambahkan!', 'success' => true]);
     }
+
     public function update(Request $request, LoyaltyProgram $program)
     {
-        $valid = Validator::make($request->all(), [
-            'name' => 'required',
-            'point' => 'required',
-            'reward' => 'required',
+        $validator = Validator::make($request->all(), [
+            'name'      => 'required|string|max:255|unique:loyalty_programs,name,' . $program->id,
+            'point'     => 'required|integer|min:1',
+            'reward'    => 'required|string|max:255',
             'startDate' => 'required|date',
-            'endDate' => 'required|date',
+            'endDate'   => 'required|date|after_or_equal:startDate',
         ]);
-        if ($valid->fails()) {
-            return response()->json(['message' => $valid->errors()->first(), 'success' => false]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()]);
         }
 
-        $program->name = $request->name;
-        $program->point = $request->point;
-        $program->reward = $request->reward;
-        $program->startDate = $request->startDate;
-        $program->endDate = $request->endDate;
-        $program->save();
+        $program->update($validator->validated());
 
-        return response()->json(['message' => 'Data successfully updated!', 'success' => true]);
+        return response()->json(['message' => 'Data berhasil diperbarui!', 'success' => true]);
     }
 
     public function delete(LoyaltyProgram $program)
     {
+        if ($program->customerLoyalties()->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Program ini tidak dapat dihapus karena sudah pernah di-redeem oleh pelanggan.'
+            ], 409);
+        }
+
         $program->delete();
-        return response()->json(['message' => 'Data successfully deleted!', 'success' => true]);
+
+        return response()->json(['message' => 'Data berhasil dihapus!', 'success' => true]);
     }
 }

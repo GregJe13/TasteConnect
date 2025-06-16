@@ -37,17 +37,14 @@ class ReservationController extends Controller
 
     public function cancelReservation(Reservation $reservation)
     {
-        // Pastikan reservasi ini milik pengguna yang sedang login
         if ($reservation->customer_id !== session('id')) {
             return response()->json(['success' => false, 'message' => 'Anda tidak berwenang melakukan aksi ini.'], 403);
         }
 
-        // Hanya reservasi dengan status 'Pending' (0) yang bisa dibatalkan
         if ($reservation->status !== 0) {
             return response()->json(['success' => false, 'message' => 'Reservasi ini tidak dapat dibatalkan lagi.'], 422);
         }
 
-        // Hapus reservasi
         $reservation->delete();
 
         return response()->json(['success' => true, 'message' => 'Reservasi berhasil dibatalkan.']);
